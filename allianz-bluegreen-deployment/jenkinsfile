@@ -3,7 +3,7 @@ pipeline {
     environment {
          // Define your Docker Hub image tag and Kubernetes namespace
          IMAGE_TAG = "shahebaz/nodejs-app:${BUILD_NUMBER}"
-         K8S_NAMESPACE = 'jenkins'
+         K8S_NAMESPACE = 'allianz-blue-green'
          DEPLOYMENT_NAME = 'nodejs-app'
          DOCKERFILE_PATH = 'allianz-bluegreen-deployment/Dockerfile'
          ISTIO_GATEWAY = 'istio-ingressgateway'  // Change if using different ingress
