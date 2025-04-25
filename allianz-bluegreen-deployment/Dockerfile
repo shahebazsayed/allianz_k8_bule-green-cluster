@@ -1,6 +1,13 @@
 FROM node:18
+
 WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install express
+
 COPY . .
-RUN sudo npm install express
+
 EXPOSE 3000
+
 CMD ["node", "app.js"]
