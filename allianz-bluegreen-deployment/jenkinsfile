@@ -5,7 +5,9 @@ pipeline {
          IMAGE_TAG = "shahebaz/nodejs-app:${BUILD_NUMBER}"
          K8S_NAMESPACE = 'jenkins'
          DEPLOYMENT_NAME = 'nodejs-app'
+         DOCKERFILE_PATH = 'allianz-bluegreen-deployment/Dockerfile'
          ISTIO_GATEWAY = 'istio-ingressgateway'  // Change if using different ingress
+         BUILD_CONTEXT = '.'
      }
     stages {
         stage('Clone Repository') {
@@ -19,7 +21,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    sh 'docker build -f ${IMAGE_TAG} .'
+                    sh 'docker.build(IMAGE_TAG, "-f ${DOCKERFILE_PATH} ${BUILD_CONTEXT}")'
                 }
             }
         }
