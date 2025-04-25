@@ -43,8 +43,8 @@ pipeline {
                 script {
                     // Deploy the Blue version of the app using Istio
                     sh """
-                    kubectl -n ${K8S_NAMESPACE} apply -f k8s/deployment-blue.yaml
-                    kubectl -n ${K8S_NAMESPACE} apply -f k8s/service-blue.yaml
+                    kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/deployment-blue.yaml
+                    kubectl -n ${K8S_NAMESPACE} apply -f /allianz-bluegreen-deployment/nodejs-app/k8s/service-blue.yaml
                     """
                 }
             }
