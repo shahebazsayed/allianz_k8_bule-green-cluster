@@ -1,10 +1,105 @@
 pipeline {
     agent any
     stages {
-        stage('Git Version') {
+        stage('Clone Repository') {
             steps {
-                sh 'git --version'
+                // Checkout the repository containing the Node.js app
+                git 'https://github.com/shahebazsayed/allianz_k8_bule-green-cluster.git'
             }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh 'docker build -t ${IMAGE_TAG} .'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Log in to Docker Hub and push the image
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'shahebazsayed07@gmail.com', passwordVariable: 'Falconsha@1692')]) {
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                        sh "docker push ${IMAGE_TAG}"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes (Blue Version)') {
+            steps {
+                script {
+                    // Deploy the Blue version of the app using Istio
+                    sh """
+                    kubectl -n ${K8S_NAMESPACE} apply -f k8s/deployment-blue.yaml
+                    kubectl -n ${K8S_NAMESPACE} apply -f k8s/service-blue.yaml
+                    """
+                }
+            }
+        }
+
+        stage('Wait for Blue Deployment') {
+            steps {
+                script {
+                    // Wait for the Blue version to be deployed
+                    sh 'kubectl -n ${K8S_NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME}-blue'
+                }
+            }
+        }
+
+        stage('Deploy Green Version') {
+            steps {
+                script {
+                    // Deploy the Green version of the app (new version) using Istio
+                    sh """
+                    kubectl -n ${K8S_NAMESPACE} apply -f k8s/deployment-green.yaml
+                    kubectl -n ${K8S_NAMESPACE} apply -f k8s/service-green.yaml
+                    """
+                }
+            }
+        }
+
+        stage('Wait for Green Deployment') {
+            steps {
+                script {
+                    // Wait for the Green version to be deployed
+                    sh 'kubectl -n ${K8S_NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME}-green'
+                }
+            }
+        }
+
+        stage('Switch Traffic with Istio') {
+            steps {
+                script {
+                    // Switch traffic to the Green version (after successful deployment)
+                    sh """
+                    kubectl -n ${K8S_NAMESPACE} apply -f k8s/virtualservice-blue-green.yaml
+                    """
+                }
+            }
+        }
+
+        stage('Clean Up Blue Version') {
+            steps {
+                script {
+                    // Clean up Blue version after successful switch
+                    sh """
+                    kubectl -n ${K8S_NAMESPACE} delete deployment ${DEPLOYMENT_NAME}-blue
+                    kubectl -n ${K8S_NAMESPACE} delete service ${DEPLOYMENT_NAME}-blue
+                    """
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo "Deployment was successful!"
+        }
+        failure {
+            echo "Deployment failed. Please check the logs for more details."
         }
     }
 }
