@@ -1,24 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nodejs-blue
+  name: nodejs-app-blue
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: nodejs
+      app: nodejs-app
       version: blue
   template:
     metadata:
       labels:
-        app: nodejs
+        app: nodejs-app
         version: blue
     spec:
       containers:
-      - name: nodejs
-        image: your-dockerhub-user/nodejs-app:blue
-        ports:
-        - containerPort: 3000
-        env:
-        - name: VERSION
-          value: blue
+        - name: nodejs-app
+          image: shahebazsayed/nodejs-app:latest
+          ports:
+            - containerPort: 8080
