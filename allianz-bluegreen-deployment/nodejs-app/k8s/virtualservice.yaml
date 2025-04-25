@@ -1,14 +1,17 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: nodejs
+  name: nodejs-app
 spec:
   hosts:
-  - "*"
-  gateways:
-  - istio-system/ingressgateway
+    - "nodejs-app.example.com"  # Your app domain
   http:
-  - route:
-    - destination:
-        host: nodejs
-        subset: blue
+    - route:
+        - destination:
+            host: nodejs-app
+            subset: blue
+          weight: 90
+        - destination:
+            host: nodejs-app
+            subset: green
+          weight: 10
