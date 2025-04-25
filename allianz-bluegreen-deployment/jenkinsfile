@@ -4,7 +4,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Checkout the repository containing the Node.js app
-                git 'https://github.com/shahebazsayed/allianz_k8_bule-green-cluster.git'
+                git branch: 'main', url: 'https://github.com/shahebazsayed/allianz_k8_bule-green-cluster.git'
             }
         }
 
