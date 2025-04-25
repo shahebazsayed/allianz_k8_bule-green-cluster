@@ -1,5 +1,12 @@
 pipeline {
     agent any
+    environment {
+         // Define your Docker Hub image tag and Kubernetes namespace
+         IMAGE_TAG = "shahebaz/nodejs-app:${BUILD_NUMBER}"
+         K8S_NAMESPACE = 'jenkins'
+         DEPLOYMENT_NAME = 'nodejs-app'
+         ISTIO_GATEWAY = 'istio-ingressgateway'  // Change if using different ingress
+     }
     stages {
         stage('Clone Repository') {
             steps {
