@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
          // Define your Docker Hub image tag and Kubernetes namespace
-         IMAGE_TAG = "shahebaz/nodejs-app:${BUILD_NUMBER}"
+         IMAGE_TAG = "shahebaz/nodejs-app:latest"
          K8S_NAMESPACE = 'allianz-blue-green'
          DEPLOYMENT_NAME = 'nodejs-app'
          DOCKERFILE_PATH = 'allianz-bluegreen-deployment/Dockerfile'
