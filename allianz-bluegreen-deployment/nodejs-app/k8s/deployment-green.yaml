@@ -1,24 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nodejs-green
+  name: nodejs-app-green
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nodejs
+      app: nodejs-app
       version: green
   template:
     metadata:
       labels:
-        app: nodejs
+        app: nodejs-app
         version: green
     spec:
       containers:
-      - name: nodejs
-        image: your-dockerhub/nodejs-app:green
-        ports:
-        - containerPort: 3000
-        env:
-        - name: VERSION
-          value: green
+        - name: nodejs-app
+          image: shahebaz/nodejs-app:latest
+          ports:
+            - containerPort: 8080
