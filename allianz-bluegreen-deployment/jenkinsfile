@@ -64,8 +64,8 @@ pipeline {
                 script {
                     // Deploy the Green version of the app (new version) using Istio
                     sh """
-                    kubectl -n ${K8S_NAMESPACE} apply -f k8s/deployment-green.yaml
-                    kubectl -n ${K8S_NAMESPACE} apply -f k8s/service-green.yaml
+                    kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/deployment-green.yaml
+                    kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/service-green.yaml
                     """
                 }
             }
@@ -85,7 +85,7 @@ pipeline {
                 script {
                     // Switch traffic to the Green version (after successful deployment)
                     sh """
-                    kubectl -n ${K8S_NAMESPACE} apply -f k8s/virtualservice-blue-green.yaml
+                    kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/virtualservice.yaml
                     """
                 }
             }
