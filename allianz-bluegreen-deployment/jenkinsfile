@@ -38,6 +38,8 @@ pipeline {
                     sh """
                     kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/deployment-blue.yaml
                     kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/deployment-green.yaml
+                    kubectl -n ${K8S_NAMESPACE} rollout restart deployment/${DEPLOYMENT_NAME}-blue
+                    kubectl -n ${K8S_NAMESPACE} rollout restart deployment/${DEPLOYMENT_NAME}-green
                     """
                 }
             }
