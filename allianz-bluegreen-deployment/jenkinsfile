@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/shahebazsayed/allianz_k8_bule-green-cluster.git'
+                git branch: 'develop', url: 'https://github.com/shahebazsayed/allianz_k8_bule-green-cluster.git'
             }
         }
 
