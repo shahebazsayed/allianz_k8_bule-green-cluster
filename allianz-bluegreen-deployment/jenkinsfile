@@ -89,6 +89,16 @@ pipeline {
                 }
             }
         }
+        stage('deploy destinitionrule') {
+            steps {
+                script {
+                    // istio-gateway  (after successful deployment)
+                    sh """
+                    kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/destinationrule.yaml
+                    """
+                }
+            }
+        }
         stage('Switch Traffic with Istio') {
             steps {
                 script {
