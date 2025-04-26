@@ -4,7 +4,9 @@ metadata:
   name: nodejs-app
 spec:
   hosts:
-    - "*"  # Your app domain
+    - "*"   # Accept any host (localhost or custom)
+  gateways:
+    - istio-ingressgateway   # Attach to Ingress Gateway (not mesh)
   http:
     - route:
         - destination:
