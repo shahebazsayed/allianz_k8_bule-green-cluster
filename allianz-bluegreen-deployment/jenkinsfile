@@ -2,12 +2,13 @@ pipeline {
     agent any
     environment {
          // Define your Docker Hub image tag and Kubernetes namespace
-         IMAGE_TAG = "shahebaz/nodejs-app:latest"
-         K8S_NAMESPACE = 'allianz-blue-green'
-         DEPLOYMENT_NAME = 'nodejs-app'
-         DOCKERFILE_PATH = 'Dockerfile'
-         ISTIO_GATEWAY = 'istio-ingressgateway'  // Change if using different ingress
-         BUILD_CONTEXT = 'allianz-bluegreen-deployment/nodejs-app'
+          IMAGE_TAG = "shahebaz/nodejs-app:latest"
+          K8S_NAMESPACE = 'allianz-blue-green'
+          DEPLOYMENT_NAME = 'nodejs-app'
+          DOCKERFILE_PATH = 'allianz-bluegreen-deployment/Dockerfile'
+          DOCKERFILE_PATH = 'allianz-bluegreen-deployment/nodejs-app/Dockerfile'
+          ISTIO_GATEWAY = 'istio-ingressgateway'  // Change if using different ingress
+          BUILD_CONTEXT = '.'
      }
     stages {
         stage('Clone Repository') {
@@ -21,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    docker.build(IMAGE_TAG, "-f ${DOCKERFILE_PATH} .")
+                    docker.build(IMAGE_TAG, "-f ${DOCKERFILE_PATH} ${BUILD_CONTEXT}")
                 }
             }
         }
