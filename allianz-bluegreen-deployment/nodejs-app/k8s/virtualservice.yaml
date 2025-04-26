@@ -4,7 +4,7 @@ metadata:
   name: nodejs-app
 spec:
   hosts:
-    - "nodejs-app.allianz-blue-green.com"  # Your app domain
+    - "*"  # Your app domain
   http:
     - route:
         - destination:
