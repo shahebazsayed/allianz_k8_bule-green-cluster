@@ -1,7 +1,7 @@
 FROM node:14
 WORKDIR /app
-COPY allianz-bluegreen-deployment/nodejs-app/package.json ./
+COPY package.json ./
 RUN npm install
-COPY allianz-bluegreen-deployment/nodejs-app/. .
+COPY . .
 EXPOSE 3000
 CMD ["node", "index.js"]
