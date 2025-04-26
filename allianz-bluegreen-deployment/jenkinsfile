@@ -21,8 +21,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    docker.build(IMAGE_TAG, "-f ${DOCKERFILE_PATH} ${BUILD_CONTEXT}")
-                }
+                    docker build docker build -t shahebaz/nodejs-app:latest -f allianz-bluegreen-deployment/nodejs-app/Dockerfile .
             }
         }
 
