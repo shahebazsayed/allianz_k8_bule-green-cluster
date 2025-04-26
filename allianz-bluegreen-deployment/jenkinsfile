@@ -1,18 +1,14 @@
 pipeline {
     agent any
     environment {
-         // Define your Docker Hub image tag and Kubernetes namespace
-          IMAGE_TAG = "shahebaz/nodejs-app:latest"
-          K8S_NAMESPACE = 'allianz-blue-green'
-          DEPLOYMENT_NAME = 'nodejs-app'
-          DOCKERFILE_PATH = 'allianz-bluegreen-deployment/nodejs-app/Dockerfile'
-          ISTIO_GATEWAY = 'istio-ingressgateway'  // Change if using different ingress
-          BUILD_CONTEXT = 'allianz-bluegreen-deployment/nodejs-app'
-     }
+        IMAGE_TAG = "shahebaz/nodejs-app:latest"
+        K8S_NAMESPACE = 'allianz-blue-green'
+        DEPLOYMENT_NAME = 'nodejs-app'
+        BUILD_CONTEXT = 'allianz-bluegreen-deployment/nodejs-app'
+    }
     stages {
         stage('Clone Repository') {
             steps {
-                // Checkout the repository containing the Node.js app
                 git branch: 'main', url: 'https://github.com/shahebazsayed/allianz_k8_bule-green-cluster.git'
             }
         }
@@ -20,16 +16,14 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
                     docker.build(IMAGE_TAG, "-f ${BUILD_CONTEXT}/Dockerfile ${BUILD_CONTEXT}")
-                    }
+                }
             }
         }
 
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Log in to Docker Hub and push the image
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
                         sh "docker push ${IMAGE_TAG}"
@@ -38,96 +32,66 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes (Blue Version)') {
+        stage('Deploy Blue and Green Deployments') {
             steps {
                 script {
-                    // Deploy the Blue version of the app using Istio
                     sh """
                     kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/deployment-blue.yaml
-                    kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/service-blue.yaml
-                    """
-                }
-            }
-        }
-
-        stage('Wait for Blue Deployment') {
-            steps {
-                script {
-                    // Wait for the Blue version to be deployed
-                    sh 'kubectl -n ${K8S_NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME}-blue'
-                }
-            }
-        }
-
-        stage('Deploy Green Version') {
-            steps {
-                script {
-                    // Deploy the Green version of the app (new version) using Istio
-                    sh """
                     kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/deployment-green.yaml
-                    kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/service-green.yaml
                     """
                 }
             }
         }
 
-        stage('Wait for Green Deployment') {
+        stage('Wait for Deployments Ready') {
             steps {
                 script {
-                    // Wait for the Green version to be deployed
-                    sh 'kubectl -n ${K8S_NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME}-green'
+                    sh "kubectl -n ${K8S_NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME}-blue"
+                    sh "kubectl -n ${K8S_NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME}-green"
                 }
             }
         }
-        stage('deploy gateway') {
+
+        stage('Deploy Common Service') {
             steps {
                 script {
-                    // istio-gateway  (after successful deployment)
+                    sh "kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/service.yaml"
+                }
+            }
+        }
+
+        stage('Deploy Istio Configurations') {
+            steps {
+                script {
                     sh """
                     kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/gateway.yaml
-                    """
-                }
-            }
-        }
-        stage('deploy destinitionrule') {
-            steps {
-                script {
-                    // istio-gateway  (after successful deployment)
-                    sh """
                     kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/destinationrule.yaml
-                    """
-                }
-            }
-        }
-        stage('Switch Traffic with Istio') {
-            steps {
-                script {
-                    // Switch traffic to the Green version (after successful deployment)
-                    sh """
                     kubectl -n ${K8S_NAMESPACE} apply -f allianz-bluegreen-deployment/nodejs-app/k8s/virtualservice.yaml
                     """
                 }
             }
         }
 
-        stage('Clean Up Blue Version') {
+        stage('Optional Clean Up Blue (After full Green switch)') {
+            when {
+                expression { return false } // <-- by default don't clean up automatically
+            }
             steps {
                 script {
-                    // Clean up Blue version after successful switch
                     sh """
-                    kubectl -n ${K8S_NAMESPACE} delete deployment ${DEPLOYMENT_NAME}-blue
-                    kubectl -n ${K8S_NAMESPACE} delete service ${DEPLOYMENT_NAME}-blue
+                    kubectl -n ${K8S_NAMESPACE} delete deployment ${DEPLOYMENT_NAME}-blue || true
                     """
                 }
             }
         }
     }
+
     post {
         success {
-            echo "Deployment was successful!"
+            echo "Deployment completed successfully!"
         }
         failure {
-            echo "Deployment failed. Please check the logs for more details."
+            echo "Deployment failed! Check the Jenkins logs."
         }
     }
 }
