@@ -1,13 +1,11 @@
 const express = require('express');
-const app = express();
+    const app = express();
+    const port = 3000;
 
-const deploymentColor = process.env.DEPLOYMENT_COLOR || 'unknown';
+    app.get('/', (req, res) => {
+      res.send('Hello, Kubernetes!');
+    });
 
-app.get('/', (req, res) => {
-  res.send(`Hello from the ${deploymentColor} deployment!`);
-});
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
-});
+    app.listen(port, () => {
+      console.log(`Server listening on port ${port}`);
+    });
