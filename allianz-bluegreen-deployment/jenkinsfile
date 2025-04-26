@@ -7,7 +7,8 @@ pipeline {
          DEPLOYMENT_NAME = 'nodejs-app'
          DOCKERFILE_PATH = 'allianz-bluegreen-deployment/nodejs-app/Dockerfile'
          ISTIO_GATEWAY = 'istio-ingressgateway'  // Change if using different ingress
-         BUILD_CONTEXT = '.'
+         BUILD_CONTEXT = 'BUILD_CONTEXT = 'allianz-bluegreen-deployment/nodejs-app'
+
      }
     stages {
         stage('Clone Repository') {
@@ -21,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    docker.build(IMAGE_TAG, "-f ${DOCKERFILE_PATH} ${BUILD_CONTEXT}")
+                    docker.build(IMAGE_TAG, "-f Dockerfile .")
                 }
             }
         }
