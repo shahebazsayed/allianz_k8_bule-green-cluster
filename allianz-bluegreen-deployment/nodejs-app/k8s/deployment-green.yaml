@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nodejs-app-green
+  namespace: allianz-blue-green
+  labels:
+    app: nodejs-app
+    version: green
 spec:
   replicas: 1
   selector:
