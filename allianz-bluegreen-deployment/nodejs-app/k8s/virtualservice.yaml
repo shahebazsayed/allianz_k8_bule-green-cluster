@@ -14,6 +14,6 @@ spec:
             subset: blue
           weight: 90
         - destination:
-            host: nodejs-app
+            host: nodejs-app-green
             subset: green
           weight: 10
