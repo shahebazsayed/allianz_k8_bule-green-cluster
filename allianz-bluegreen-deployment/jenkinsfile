@@ -5,7 +5,6 @@ pipeline {
           IMAGE_TAG = "shahebaz/nodejs-app:latest"
           K8S_NAMESPACE = 'allianz-blue-green'
           DEPLOYMENT_NAME = 'nodejs-app'
-          DOCKERFILE_PATH = 'allianz-bluegreen-deployment/Dockerfile'
           DOCKERFILE_PATH = 'allianz-bluegreen-deployment/nodejs-app/Dockerfile'
           ISTIO_GATEWAY = 'istio-ingressgateway'  // Change if using different ingress
           BUILD_CONTEXT = '.'
