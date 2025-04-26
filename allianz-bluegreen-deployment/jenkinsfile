@@ -21,7 +21,8 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    ddocker.build(IMAGE_TAG, "-f ${BUILD_CONTEXT}/Dockerfile ${BUILD_CONTEXT}")
+                    docker.build(IMAGE_TAG, "-f ${BUILD_CONTEXT}/Dockerfile ${BUILD_CONTEXT}")
+                    }
             }
         }
 
