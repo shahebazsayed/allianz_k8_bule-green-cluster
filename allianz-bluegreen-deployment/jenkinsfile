@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'develop', url: 'https://github.com/shahebazsayed/allianz_k8_bule-green-cluster.git'
+                git branch: 'main', url: 'https://github.com/shahebazsayed/allianz_k8_bule-green-cluster.git'
             }
         }
 
@@ -75,18 +75,17 @@ pipeline {
         }
 
         stage('Optional Clean Up Blue (After full Green switch)') {
- ~            when {
- ~                expression { return false } // <-- by default don't clean up automatically
- ~            }
- ~            steps {
- ~                script {
- ~                    sh """
- ~                    kubectl -n ${K8S_NAMESPACE} delete deployment ${DEPLOYMENT_NAME}-blue || true
- ~                    """
- ~                }
- ~            }
- ~        }
-    
+            when {
+                expression { return false } // <-- by default don't clean up automatically
+            }
+            steps {
+                script {
+                    sh """
+                    kubectl -n ${K8S_NAMESPACE} delete deployment ${DEPLOYMENT_NAME}-blue || true
+                    """
+                }
+            }
+        }
     }
 
     post {
