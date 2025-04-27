@@ -80,7 +80,6 @@ pipeline {
                     // Clean up Blue version after successful switch
                     sh """
                     kubectl -n ${K8S_NAMESPACE} delete deployment ${DEPLOYMENT_NAME}-blue
-                    kubectl -n ${K8S_NAMESPACE} delete service ${DEPLOYMENT_NAME}-blue
                     """
                 }
             }
