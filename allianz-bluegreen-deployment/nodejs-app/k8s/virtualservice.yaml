@@ -13,8 +13,8 @@ spec:
         - destination:
             host: nodejs-app
             subset: blue
-          weight: 0
+          weight: 100
         - destination:
             host: nodejs-app
             subset: green
-          weight: 100
+          weight: 0
