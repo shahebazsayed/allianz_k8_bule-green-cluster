@@ -110,17 +110,18 @@ pipeline {
             }
         }
 
-        stage('Clean Up Blue Version') {
-            steps {
-                script {
-                    // Clean up Blue version after successful switch
-                    sh """
-                    kubectl -n ${K8S_NAMESPACE} delete deployment ${DEPLOYMENT_NAME}-blue
-                    kubectl -n ${K8S_NAMESPACE} delete service ${DEPLOYMENT_NAME}-blue
-                    """
-                }
-            }
-        }
+        stage('Optional Clean Up Blue (After full Green switch)') {
+ ~            when {
+ ~                expression { return false } // <-- by default don't clean up automatically
+ ~            }
+ ~            steps {
+ ~                script {
+ ~                    sh """
+ ~                    kubectl -n ${K8S_NAMESPACE} delete deployment ${DEPLOYMENT_NAME}-blue || true
+ ~                    """
+ ~                }
+ ~            }
+ ~        }
     }
     post {
         success {
